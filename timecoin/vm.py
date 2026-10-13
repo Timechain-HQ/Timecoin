@@ -1,8 +1,8 @@
 """A small gas-metered stack machine for Timecoin contracts.
 
-The machine is sequential and deterministic, in the same role as the EVM:
-every node runs the bytecode and must reach the same storage. It has no
-external calls, so a contract cannot re-enter another contract.
+The machine is sequential and deterministic. Every node that runs the same
+bytecode reaches the same storage. It has no external calls, so a contract
+cannot re-enter another contract.
 """
 
 from __future__ import annotations

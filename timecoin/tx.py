@@ -239,8 +239,8 @@ def execution_waves(txs: list[Tx]) -> list[list[Tx]]:
     """Group transactions that do not touch the same notes or contracts.
 
     Waves run in order. Transactions inside one wave commute. This is the
-    testnet form of RChain's idea that independent reductions can proceed
-    together, while conflicting ones stay ordered.
+    Transactions that do not touch the same notes or contracts form one wave
+    and commute. Overlapping transactions stay in order.
     """
     waves: list[list[Tx]] = []
     current: list[Tx] = []
