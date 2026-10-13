@@ -7,8 +7,9 @@ Timecoin is a testnet. It is not a mainnet, it has no peer-to-peer network, and 
 - Network name: `timecoin-testnet`
 - Chain id: `timecoin-testnet-1`
 - Genesis is domain-separated so a future mainnet cannot reuse these blocks.
-- 1 TIME = 10^8 base units.
-- Each block mints 50 TIME. Genesis supply is zero.
+- The token is Timecoin. The ticker is TIC.
+- 1 TIC = 10^8 base units.
+- Each block mints 50 TIC. Genesis supply is zero.
 - The slot target is 600 seconds. A block must use a higher slot than its parent. Tests may use any increasing slot.
 
 ## Notes
@@ -17,7 +18,7 @@ A note has a public amount and a one-time ML-DSA-44 spend key. The long-term ML-
 
 The note commitment binds the amount, the one-time public key, the 32-byte rho, the ciphertext, and the MAC. The nullifier is derived from the one-time public key and rho. A nullifier can be published once.
 
-Nodes check conservation in the clear: input amounts equal output amounts plus the fee, adjusted for contract deposits and payouts. Fees move into the coinbase. Only the 50 TIME reward increases supply.
+Nodes check conservation in the clear: input amounts equal output amounts plus the fee, adjusted for contract deposits and payouts. Fees move into the coinbase. Only the 50 TIC reward increases supply.
 
 ## Wallet
 
@@ -34,6 +35,14 @@ A block commits to its parent, height, slot, transactions, up to two uncle heade
 Fork choice prefers the greater height. At equal height the smaller block id wins. An uncle must be a competing sibling of the parent: same grandparent and the same height as the parent. Uncle transactions are not applied.
 
 Transactions that do not touch the same notes or contracts can be applied in either order. Transactions that overlap stay in the order listed in the block.
+
+## Mempool, store, and block bytes
+
+A node admits a transaction when that transaction applies after every transaction already in the pool. The proposer takes the prefix that still applies to the parent, seals the block, and drops the included transactions.
+
+`chain.json` stores blocks. Loading creates a new chain and runs every block again. A balance edited in the file does not become state, because state is the result of execution.
+
+`TCBLK1` plus a length plus the canonical block JSON is enough for a second process that already has the parent. The receiver checks the signature, the uncle rule, and the state root.
 
 ## What a node can see
 

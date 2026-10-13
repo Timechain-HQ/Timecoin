@@ -13,6 +13,8 @@ from timecoin.chain import (
     NETWORK,
     REWARD,
     SLOT_TARGET_SECONDS,
+    TICKER,
+    TOKEN_NAME,
     Chain,
     contract_id_of,
 )
@@ -24,6 +26,7 @@ from timecoin.wallet import Wallet, format_time
 
 def demo() -> None:
     print(f"Timecoin {__version__}  network={NETWORK}")
+    print(f"Token: {TOKEN_NAME}. Ticker: {TICKER}.")
     print("Status: testnet. Full testnet functions below. Not mainnet.")
     print(f"Signatures: {ML_DSA}. Note encryption: {ML_KEM}.")
     print(f"Slot target: {SLOT_TARGET_SECONDS}s. Block reward: {format_time(REWARD)}.")
@@ -48,7 +51,7 @@ def demo() -> None:
     )
     second = _mine(chain, miner_private, miner_public, alice.view_pub, 2, [payment])
     bob_notes = bob.scan(chain.states[chain.head()])
-    print(f"block 2  {second.hex()}  alice paid bob 20 TIME")
+    print(f"block 2  {second.hex()}  alice paid bob 20 {TICKER}")
     print(f"bob memo: {bob_notes[0][2]!r}")
     print(f"carol can open bob's note: {open_output(bob_notes[0][0], carol.view_private) is not None}")
 
@@ -120,11 +123,28 @@ def _mine(chain: Chain, private: bytes, public: bytes, view_pub: bytes, slot: in
     return block.block_id()
 
 
+def charts(directory: str | None = None) -> None:
+    from pathlib import Path
+
+    from timecoin.measure import write_charts
+
+    root = Path(__file__).resolve().parents[1]
+    target = Path(directory) if directory else root / "docs" / "charts"
+    measured = write_charts(target)
+    points = measured["points"]
+    head = points[-1]
+    print(f"wrote {target}")
+    print(f"height {head.height}  supply {head.supply}  locked {measured['locked_final']}")
+
+
 def main() -> None:
     if len(sys.argv) == 2 and sys.argv[1] == "demo":
         demo()
         return
-    print("Usage: python3 -m timecoin.cli demo", file=sys.stderr)
+    if len(sys.argv) >= 2 and sys.argv[1] == "charts":
+        charts(sys.argv[2] if len(sys.argv) == 3 else None)
+        return
+    print("Usage: python3 -m timecoin.cli demo|charts [directory]", file=sys.stderr)
     raise SystemExit(2)
 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from timecoin.chain import BASE_UNITS, State
+from timecoin.chain import BASE_UNITS, TICKER, State
 from timecoin.pq import ML_DSA, ML_KEM, generate
 from timecoin.tx import Output, Tx, create_output, open_output, transfer
 
@@ -57,7 +57,7 @@ class Wallet:
             if total >= amount + fee:
                 break
         if total < amount + fee:
-            raise ValueError("insufficient TIME")
+            raise ValueError(f"insufficient {TICKER}")
         outputs = [create_output(recipient_view_pub, amount, memo)[0]]
         change = total - amount - fee
         if change:
@@ -69,5 +69,5 @@ def format_time(base_units: int) -> str:
     whole = base_units // BASE_UNITS
     fraction = base_units % BASE_UNITS
     if fraction == 0:
-        return f"{whole} TIME"
-    return f"{whole}.{fraction:08d}".rstrip("0") + " TIME"
+        return f"{whole} {TICKER}"
+    return f"{whole}.{fraction:08d}".rstrip("0") + f" {TICKER}"

@@ -19,12 +19,16 @@ from timecoin.tx import (
     TxError,
     execution_waves,
     nullifier,
+    output_from_dict,
+    tx_from_dict,
 )
 from timecoin.vm import Instruction, VmError, run
 
 NETWORK = "timecoin-testnet"
 CHAIN_ID = "timecoin-testnet-1"
 GENESIS_DOMAIN = b"timecoin-testnet.genesis.v1"
+TOKEN_NAME = "Timecoin"
+TICKER = "TIC"
 BASE_UNITS = 10**8
 REWARD = 50 * BASE_UNITS
 SLOT_TARGET_SECONDS = 600
@@ -125,6 +129,34 @@ class Block:
 
     def block_id(self) -> bytes:
         return shake(b"timecoin.blockid.v1" + self.signing_bytes() + self.signature)
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "parent": self.parent.hex(),
+            "height": self.height,
+            "slot": self.slot,
+            "txs": [tx.to_dict() for tx in self.txs],
+            "uncles": [uncle.hex() for uncle in self.uncles],
+            "coinbase": None if self.coinbase is None else self.coinbase.to_dict(),
+            "proposer_pub": self.proposer_pub.hex(),
+            "state_root": self.state_root.hex(),
+            "signature": self.signature.hex(),
+        }
+
+    @staticmethod
+    def from_dict(data: dict[str, object]) -> Block:
+        coinbase = data["coinbase"]
+        return Block(
+            parent=bytes.fromhex(str(data["parent"])),
+            height=int(data["height"]),  # type: ignore[arg-type]
+            slot=int(data["slot"]),  # type: ignore[arg-type]
+            txs=[tx_from_dict(item) for item in data["txs"]],  # type: ignore[union-attr]
+            uncles=[bytes.fromhex(item) for item in data["uncles"]],  # type: ignore[union-attr]
+            coinbase=None if coinbase is None else output_from_dict(coinbase),  # type: ignore[arg-type]
+            proposer_pub=bytes.fromhex(str(data["proposer_pub"])),
+            state_root=bytes.fromhex(str(data["state_root"])),
+            signature=bytes.fromhex(str(data["signature"])),
+        )
 
 
 class Chain:

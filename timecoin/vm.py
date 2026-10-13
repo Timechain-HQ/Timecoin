@@ -7,7 +7,19 @@ cannot re-enter another contract.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 Instruction = tuple[str, int]
+
+
+@dataclass
+class Step:
+    """One executed instruction. ``gas_used`` is the total spent so far."""
+
+    pc: int
+    op: str
+    gas_used: int
+    stack_depth: int
 
 # Vault: arg0 = 1 deposits callvalue (which must equal arg1) into slot 0.
 # arg0 = 2 withdraws arg1 to the transaction payout. Any other arg0 reverts.
@@ -67,8 +79,13 @@ def run(
     args: list[int],
     callvalue: int,
     gas_limit: int = 10_000,
+    steps: list[Step] | None = None,
 ) -> tuple[dict[int, int], int, int]:
-    """Execute ``code`` and return ``(storage, payout, gas_used)``."""
+    """Execute ``code`` and return ``(storage, payout, gas_used)``.
+
+    When ``steps`` is a list, each completed instruction is appended. A revert
+    still leaves the steps that ran before the failure.
+    """
     memory = dict(storage)
     stack: list[int] = []
     gas = gas_limit
@@ -81,7 +98,12 @@ def run(
         if gas < 0:
             raise VmError("out of gas")
 
+    def note(at: int, op: str) -> None:
+        if steps is not None:
+            steps.append(Step(at, op, gas_limit - gas, len(stack)))
+
     while pc < len(code):
+        at = pc
         op, arg = _decode(code[pc])
         if op == "PUSH":
             burn()
@@ -140,17 +162,23 @@ def run(
         elif op == "JUMPI":
             burn()
             condition = _pop(stack)
+            note(at, op)
             if condition:
                 pc = _jump(code, arg)
-                continue
+            else:
+                pc += 1
+            continue
         elif op == "JUMP":
             burn()
+            note(at, op)
             pc = _jump(code, arg)
             continue
         elif op == "STOP":
+            note(at, op)
             break
         else:
             raise VmError(f"unknown opcode {op}")
+        note(at, op)
         pc += 1
     return memory, payout, gas_limit - gas
 

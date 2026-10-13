@@ -238,9 +238,8 @@ def invocation(
 def execution_waves(txs: list[Tx]) -> list[list[Tx]]:
     """Group transactions that do not touch the same notes or contracts.
 
-    Waves run in order. Transactions inside one wave commute. This is the
-    Transactions that do not touch the same notes or contracts form one wave
-    and commute. Overlapping transactions stay in order.
+    Waves run in order. Transactions inside one wave commute. Overlapping
+    transactions stay in the order the block listed them.
     """
     waves: list[list[Tx]] = []
     current: list[Tx] = []
@@ -291,6 +290,74 @@ def _unpack(plaintext: bytes) -> tuple[int, bytes, bytes, bytes]:
     if cursor + memo_len != len(plaintext):
         raise TxError("plaintext")
     return value, rho, one_time_private, plaintext[cursor:]
+
+
+def output_from_dict(data: dict[str, int | str]) -> Output:
+    return Output(
+        int(data["value"]),
+        bytes.fromhex(str(data["onetime_pub"])),
+        bytes.fromhex(str(data["rho"])),
+        bytes.fromhex(str(data["kem_ct"])),
+        bytes.fromhex(str(data["cipher"])),
+        bytes.fromhex(str(data["mac"])),
+    )
+
+
+def tx_from_dict(data: dict[str, object]) -> Tx:
+    deploy_raw = data["deploy"]
+    call_raw = data["call"]
+    deploy = None if deploy_raw is None else _deploy_from_dict(deploy_raw)
+    call = None if call_raw is None else _call_from_dict(call_raw)
+    return Tx(
+        kind=str(data["kind"]),
+        inputs=[_spend_from_dict(item) for item in data["inputs"]],  # type: ignore[union-attr]
+        outputs=[output_from_dict(item) for item in data["outputs"]],  # type: ignore[arg-type]
+        fee=int(data["fee"]),  # type: ignore[arg-type]
+        deploy=deploy,
+        call=call,
+    )
+
+
+def _spend_from_dict(data: dict[str, object]) -> Spend:
+    signature = str(data["signature"])
+    body = {key: value for key, value in data.items() if key != "signature"}
+    return Spend(output_from_dict(body), bytes.fromhex(signature))  # type: ignore[arg-type]
+
+
+def _deploy_from_dict(data: object) -> Deploy:
+    if not isinstance(data, dict):
+        raise TxError("deploy")
+    return Deploy(
+        _code_from_json(data["code"]),
+        bytes.fromhex(str(data["cap_pub"])),
+        bytes.fromhex(str(data["cap_signature"])),
+    )
+
+
+def _call_from_dict(data: object) -> Call:
+    if not isinstance(data, dict):
+        raise TxError("call")
+    return Call(
+        bytes.fromhex(str(data["contract_id"])),
+        [int(arg) for arg in data["args"]],
+        int(data["callvalue"]),
+        bytes.fromhex(str(data["cap_signature"])),
+    )
+
+
+def _code_from_json(data: object) -> list[Instruction]:
+    if not isinstance(data, list):
+        raise TxError("code")
+    code: list[Instruction] = []
+    for item in data:
+        if not isinstance(item, list) or not item:
+            raise TxError("code")
+        op = str(item[0])
+        if len(item) == 1 or item[1] is None:
+            code.append((op,))
+        else:
+            code.append((op, int(item[1])))
+    return code
 
 
 def _normalized(code: list[Instruction]) -> list[tuple[str, int | None]]:
