@@ -6,7 +6,7 @@ Primary pages were read on 2026-10-12. Timecoin copies specific mechanisms from 
 
 `GET https://api.github.com/repos/9lordisgod/Timecoin` returned 404. The public repository list for `9lordisgod` includes `DarkWow-Chain-Research` and does not include `Timecoin`. Those notes describe DarkWow, not this chain.
 
-`GET https://api.github.com/orgs/Timechain-HQ` on 2026-10-13 returned the organization `Timechain HQ`, created `2026-10-13T04:40:10Z`, with `public_repos: 0`. The testnet tree is meant to be published as `Timechain-HQ/Timecoin`. Publishing needs a credential this machine does not have.
+`GET https://api.github.com/orgs/Timechain-HQ` on 2026-10-13 returned the organization `Timechain HQ`, created `2026-10-13T04:40:10Z`. The testnet was then created as the public repository `Timechain-HQ/Timecoin`.
 
 This testnet is a new implementation.
 

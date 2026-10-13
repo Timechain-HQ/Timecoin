@@ -2,14 +2,7 @@
 
 Timecoin is a local testnet for a stealth-style chain. Version 0.1.0 implements the testnet functions below on one machine. It is not mainnet, it has no peer-to-peer network, and it is not audited.
 
-The organization page is <https://github.com/Timechain-HQ>. It existed on 2026-10-13 and had no public repositories. The testnet repository to create there is <https://github.com/Timechain-HQ/Timecoin>. This machine has no GitHub token and no SSH key, so the push has not been made.
-
-From an account that can create repositories in `Timechain-HQ`:
-
-```bash
-cd ~/Timecoin
-gh repo create Timechain-HQ/Timecoin --public --source . --remote origin --description "Timecoin testnet. Not mainnet." --push
-```
+The public testnet repository is <https://github.com/Timechain-HQ/Timecoin>. It is not a mainnet.
 
 ## What the testnet does
 
