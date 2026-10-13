@@ -13,6 +13,8 @@ Timecoin is a layer-1 testnet. Version 0.2.0 runs in one process, checks every b
 | [book](https://github.com/Timechain-HQ/book) | State machine, byte layout, and issuance charts |
 | [wallet](https://github.com/Timechain-HQ/wallet) | View keys, note opening, payment, and sweep |
 | [contracts](https://github.com/Timechain-HQ/contracts) | Gas-metered machine and the vault |
+| [privacy](https://github.com/Timechain-HQ/privacy) | What the block hides and what it publishes |
+| [post-quantum](https://github.com/Timechain-HQ/post-quantum) | ML-DSA-44 and ML-KEM-768 required from genesis |
 
 The token is Timecoin. The ticker is TIC. Network `timecoin-testnet`, chain id `timecoin-testnet-1`. Genesis is domain-separated from any later network. 1 TIC = 10^8 base units. Each block mints 50 TIC. There is no premine. The slot target is 600 seconds.
 
