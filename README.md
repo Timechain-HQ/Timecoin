@@ -1,10 +1,18 @@
+<p align="center">
+  <img src="logo.png" alt="Timechain HQ" width="120" height="120" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/Timechain-HQ">Timechain HQ</a> ·
+  <a href="https://github.com/Timechain-HQ/roadmap">Roadmap</a> ·
+  <a href="https://www.timecoin.cash">timecoin.cash</a>
+</p>
+
 # Timecoin
 
+Timecoin is a layer-1 **testnet**. Version 0.2.0 runs in one process, checks every block from genesis, and can hand a sealed block to a second process. It is not mainnet, it has no gossip network, and it is not audited.
+
 Original repository: <https://github.com/9lordisgod/Timecoin>
-
-Organization: <https://github.com/Timechain-HQ>
-
-Timecoin is a layer-1 testnet. Version 0.2.0 runs in one process, checks every block from genesis, and can hand a sealed block to a second process. It is not mainnet, it has no gossip network, and it is not audited.
 
 | Repository | What is actually in it |
 | --- | --- |
@@ -15,10 +23,13 @@ Timecoin is a layer-1 testnet. Version 0.2.0 runs in one process, checks every b
 | [contracts](https://github.com/Timechain-HQ/contracts) | Gas-metered machine and the vault |
 | [privacy](https://github.com/Timechain-HQ/privacy) | What the block hides and what it publishes |
 | [post-quantum](https://github.com/Timechain-HQ/post-quantum) | ML-DSA-44 and ML-KEM-768 required from genesis |
+| [roadmap](https://github.com/Timechain-HQ/roadmap) | Public testnet path |
 
 The token is Timecoin. The ticker is TIC. Network `timecoin-testnet`, chain id `timecoin-testnet-1`. Genesis is domain-separated from any later network. 1 TIC = 10^8 base units. Each block mints 50 TIC. There is no premine. The slot target is 600 seconds.
 
 Signatures are ML-DSA-44. Note bodies are ML-KEM-768. Amounts and fees are public. The long-term view key is not written into the block. A sender who keeps the one-time key can spend that note until the recipient sweeps it.
+
+See **[ROADMAP.md](ROADMAP.md)** for the ordered path from this node toward a public testnet (not mainnet).
 
 ## Measured run
 
