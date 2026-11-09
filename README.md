@@ -1,7 +1,6 @@
 <p align="center">
   <a href="https://github.com/Timechain-HQ">Timechain HQ</a> ·
-  <a href="https://github.com/Timechain-HQ/roadmap">Roadmap</a> ·
-  <a href="https://www.timecoin.cash">timecoin.cash</a>
+  <a href="https://github.com/Timechain-HQ/roadmap">Roadmap</a>
 </p>
 
 # Timecoin
